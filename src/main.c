@@ -407,7 +407,7 @@ int main (int argc, const char **argv){
         input = fopen(args.input_file, "r");
         if (input == NULL){
           char *errorinfo = strerror(errno);
-          fprintf(stderr, "fopen to %s was failed: %s\n", args.input_file, errorinfo);
+          fprintf(stderr, "fopen() to %s was failed: %s\n", args.input_file, errorinfo);
           return 1;
         }
       }
@@ -419,7 +419,7 @@ int main (int argc, const char **argv){
         output = fopen(args.output_file, "w");
         if (output == NULL){
           char *errorinfo = strerror(errno);
-          fprintf(stderr, "fopen to %s was failed: %s\n", args.output_file, errorinfo);
+          fprintf(stderr, "fopen() to %s was failed: %s\n", args.output_file, errorinfo);
           return 1;
         }
       }
@@ -429,6 +429,7 @@ int main (int argc, const char **argv){
       void *data;
       size_t datasize;
       if (read_all(input, &data, &datasize) != 0){
+        fprintf(stderr, "read_all() was failed.\n");
         return 1;
       }
       switch (args.mode){
@@ -439,12 +440,16 @@ int main (int argc, const char **argv){
           }
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
+            char *errorinfo = strerror(errno);
+            fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
             return 1;
           }
           if (complex_xcipher_encrypt(data, datasize, &(args.keyset), data2, datasize2) != 0){
+            fprintf(stderr, "complex_xcipher_encrypt() was failed.\n");
             return 1;
           }
           if (write_all(output, data2, datasize2) != 0){
+            fprintf(stderr, "write_all() was failed.\n");
             return 1;
           }
           break;
@@ -460,12 +465,16 @@ int main (int argc, const char **argv){
           }
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
+            char *errorinfo = strerror(errno);
+            fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
             return 1;
           }
           if (complex_xcipher_decrypt(args.position, datasize2, data, datasize, &(args.keyset), data2) != 0){
+            fprintf(stderr, "complex_xcipher_decrypt() was failed.\n");
             return 1;
           }
           if (write_all(output, data2, datasize2) != 0){
+            fprintf(stderr, "write_all() was failed.\n");
             return 1;
           }
           break;
