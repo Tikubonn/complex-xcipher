@@ -420,6 +420,7 @@ int main (int argc, const char **argv){
         if (output == NULL){
           char *errorinfo = strerror(errno);
           fprintf(stderr, "fopen() to %s was failed: %s\n", args.output_file, errorinfo);
+          fclose(input);
           return 1;
         }
       }
@@ -436,20 +437,28 @@ int main (int argc, const char **argv){
         case CIPHER_MODE_ENCTYPT: {
           size_t datasize2;
           if (complex_xcipher_calc_encrypted_data_size(datasize, &datasize2) != 0){
+            fclose(input);
+            fclose(output);
             return 1;
           }
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
             char *errorinfo = strerror(errno);
             fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
+            fclose(input);
+            fclose(output);
             return 1;
           }
           if (complex_xcipher_encrypt(data, datasize, &(args.keyset), data2, datasize2) != 0){
             fprintf(stderr, "complex_xcipher_encrypt() was failed.\n");
+            fclose(input);
+            fclose(output);
             return 1;
           }
           if (write_all(output, data2, datasize2) != 0){
             fprintf(stderr, "write_all() was failed.\n");
+            fclose(input);
+            fclose(output);
             return 1;
           }
           break;
@@ -467,19 +476,28 @@ int main (int argc, const char **argv){
           if (data2 == NULL){
             char *errorinfo = strerror(errno);
             fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
+            fclose(input);
+            fclose(output);
             return 1;
           }
           if (complex_xcipher_decrypt(args.position, datasize2, data, datasize, &(args.keyset), data2) != 0){
             fprintf(stderr, "complex_xcipher_decrypt() was failed.\n");
+            fclose(input);
+            fclose(output);
             return 1;
           }
           if (write_all(output, data2, datasize2) != 0){
             fprintf(stderr, "write_all() was failed.\n");
+            fclose(input);
+            fclose(output);
             return 1;
           }
           break;
         }
         default:
+          fprintf(stderr, "Given an unknown cipher_mode: %d\n", args.mode);
+          fclose(input);
+          fclose(output);
           return 1;
       }
     }
