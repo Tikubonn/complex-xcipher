@@ -1,0 +1,87 @@
+
+#include <stddef.h>
+#include <stdint.h>
+#include <complex-xcipher/complex-xcipher.h>
+#include "test.h"
+
+static void testcase_error (){
+  uint8_t plaindata[100] = {0};
+  complex_xcipher_key keys[11] = {0};
+  complex_xcipher_keyset keyset;
+  complex_xcipher_keyset_setup(keys, &keyset);
+  size_t encrypteddatasize;
+  TEST(complex_xcipher_calc_encrypted_data_size(sizeof(plaindata), &encrypteddatasize) == 0);
+  TEST(encrypteddatasize == 128);
+  {
+    uint8_t encrypteddata[encrypteddatasize];
+    TEST(complex_xcipher_encrypt_into(0, NULL, 0, &keyset, encrypteddata, encrypteddatasize) == 0);
+  }
+  {
+    uint8_t encrypteddata[encrypteddatasize];
+    TEST(complex_xcipher_encrypt_into(0, plaindata, sizeof(plaindata), &keyset, encrypteddata, encrypteddatasize) == 0);
+  }
+  {
+    uint8_t encrypteddata[encrypteddatasize];
+    TEST(complex_xcipher_encrypt_into(sizeof(plaindata), NULL, 0, &keyset, encrypteddata, encrypteddatasize) == 0);
+  }
+  {
+    uint8_t encrypteddata[encrypteddatasize];
+    TEST(complex_xcipher_encrypt_into(0, NULL, SIZE_MAX, &keyset, encrypteddata, encrypteddatasize) != 0);
+  }
+  {
+    uint8_t encrypteddata[encrypteddatasize];
+    TEST(complex_xcipher_encrypt_into(SIZE_MAX, NULL, 0, &keyset, encrypteddata, encrypteddatasize) != 0);
+  }
+}
+
+static void testcase (){
+  uint8_t plaindata[100] = {0};
+  complex_xcipher_key keys[11] = {0};
+  complex_xcipher_keyset keyset;
+  complex_xcipher_keyset_setup(keys, &keyset);
+  size_t encrypteddatasize;
+  TEST(complex_xcipher_calc_encrypted_data_size(sizeof(plaindata), &encrypteddatasize) == 0);
+  TEST(encrypteddatasize == 128, "%zu", encrypteddatasize);
+  uint8_t encrypteddata[encrypteddatasize];
+  TEST(complex_xcipher_encrypt(plaindata, sizeof(plaindata), &keyset, encrypteddata, encrypteddatasize) == 0);
+  {
+    uint8_t decrypteddata[sizeof(plaindata)];
+    TEST(complex_xcipher_decrypt(0, sizeof(decrypteddata), encrypteddata, encrypteddatasize, &keyset, decrypteddata) == 0);
+    for (size_t i = 0; i < sizeof(decrypteddata); i++){
+      TEST(decrypteddata[i] == 0, "i=%zu, %d", i, decrypteddata[i]);
+    }
+  }
+  {
+    uint8_t additionaldata[50];
+    for (size_t i = 0; i < sizeof(additionaldata); i++){
+      additionaldata[i] = i;
+    }
+    TEST(complex_xcipher_encrypt_into(0, additionaldata, sizeof(additionaldata), &keyset, encrypteddata, encrypteddatasize) == 0);
+  }
+  {
+    uint8_t additionaldata[50];
+    for (size_t i = 0; i < sizeof(additionaldata); i++){
+      additionaldata[i] = 49 - i;
+    }
+    TEST(complex_xcipher_encrypt_into(50, additionaldata, sizeof(additionaldata), &keyset, encrypteddata, encrypteddatasize) == 0);
+  }
+  {
+    uint8_t decrypteddata[50];
+    TEST(complex_xcipher_decrypt(0, sizeof(decrypteddata), encrypteddata, encrypteddatasize, &keyset, decrypteddata) == 0);
+    for (size_t i = 0; i < sizeof(decrypteddata); i++){
+      TEST(decrypteddata[i] == i, "i=%zu, %d, %d", i, decrypteddata[i], (uint8_t)i);
+    }
+  }
+  {
+    uint8_t decrypteddata[50];
+    TEST(complex_xcipher_decrypt(50, sizeof(decrypteddata), encrypteddata, encrypteddatasize, &keyset, decrypteddata) == 0);
+    for (size_t i = 0; i < sizeof(decrypteddata); i++){
+      TEST(decrypteddata[i] == 49 - i, "i=%zu, %d, %d", i, decrypteddata[i], (uint8_t)(49 - i));
+    }
+  }
+}
+
+void test_complex_xcipher_encrypt_into (){
+  testcase_error();
+  testcase();
+}
