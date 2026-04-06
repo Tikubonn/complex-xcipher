@@ -16,7 +16,7 @@ static int parse_uint_as_decimal (const char *source, uintmax_t *valuep){
       value += source[i] - '0';
     }
     else {
-      fprintf(stderr, "Invalid char %c detected from %s when parse as uint(decimal).\n", source[i], source);
+      fprintf(stderr, "Invalid char %c detected from \"%s\" when parse as uint(decimal).\n", source[i], source);
       return 1;
     }
   }
@@ -43,7 +43,7 @@ static int parse_uint_as_hex (const char *source, uintmax_t *valuep){
         value += source[i] - 'A';
       }
       else {
-        fprintf(stderr, "Invalid char %c detected from %s when parse as uint(hexadecimal).\n", source[i], source);
+        fprintf(stderr, "Invalid char %c detected from \"%s\" when parse as uint(hexadecimal).\n", source[i], source);
         return 1;
       }
     }
@@ -70,7 +70,7 @@ static int parse_uint (const char *source, uintmax_t *valuep){
     return parse_uint_as_decimal(source, valuep);
   }
   else {
-    fprintf(stderr, "Invalid char %c detected from %s when parse as uint.\n", source[0], source);
+    fprintf(stderr, "Invalid char %c detected from \"%s\" when parse as uint.\n", source[0], source);
     return 1;
   }
 }
@@ -80,30 +80,37 @@ static int parse_uint (const char *source, uintmax_t *valuep){
 #endif
 
 static int parse_keys (const char *source, complex_xcipher_key keys[COMPLEX_XCIPHER_KEYS_LENGTH]){
-  for (size_t i = 0; i < COMPLEX_XCIPHER_KEYS_LENGTH; i++){
-    keys[i] = 0;
-  }
-  size_t sourcelen = strlen(source);
-  for (size_t i = 0; i < COMPLEX_XCIPHER_KEYS_LENGTH; i++){
-    char sourcepart[sizeof(complex_xcipher_key) * 2 + 1] = {'\0'};
-    size_t ibegin = MIN(sourcelen, i * sizeof(complex_xcipher_key) * 2);
-    size_t iend = MIN(sourcelen, (i + 1) * sizeof(complex_xcipher_key) * 2);
-    if (ibegin < iend){
+  if (source[0] == '0' && source[1] == 'x'){
+    const char *src = source +2;
+    for (size_t i = 0; i < COMPLEX_XCIPHER_KEYS_LENGTH; i++){
       keys[i] = 0;
     }
-    else {
-      memcpy(sourcepart, source + ibegin, iend - ibegin);
-      uintmax_t value;
-      if (parse_uint_as_hex(sourcepart, &value) == 0){
-        keys[i] = value;
+    size_t srclen = strlen(src);
+    for (size_t i = 0; i < COMPLEX_XCIPHER_KEYS_LENGTH; i++){
+      char srcpart[sizeof(complex_xcipher_key) * 2 + 1] = {'\0'};
+      size_t ibegin = MIN(srclen, i * sizeof(complex_xcipher_key) * 2);
+      size_t iend = MIN(srclen, (i + 1) * sizeof(complex_xcipher_key) * 2);
+      if (ibegin < iend){
+        memcpy(srcpart, src + ibegin, iend - ibegin);
+        uintmax_t value;
+        if (parse_uint_as_hex(srcpart, &value) == 0){
+          keys[i] = value;
+        }
+        else {
+          fprintf(stderr, "Could not parse \"%s\" as int (its part of \"%s\").\n", srcpart, source);
+          return 1;
+        }
       }
       else {
-        fprintf(stderr, "Could not parse %s as int (its part of %s).\n", sourcepart, source);
-        return 1;
+        keys[i] = 0;
       }
     }
+    return 0;
   }
-  return 0;
+  else {
+    fprintf(stderr, "Cipher keys prefix must be '0x': \"%s\"\n", source);
+    return 1;
+  }
 }
 
 typedef enum cipher_mode {
@@ -146,7 +153,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
   size_t size = 0;
   const char *input_file = NULL;
   const char *output_file = NULL;
-  size_t index = 0;
+  size_t index = 1;
   while (index < argc){
     if (strcmp(argv[index], "-o") == 0 ||
         strcmp(argv[index], "--output-file") == 0){
@@ -171,6 +178,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
       if (!mode_was_given){
         mode = CIPHER_MODE_ENCTYPT;
         mode_was_given = true;
+        index += 1;
       }
       else {
         fprintf(stderr, "Already given an argument of %s\n", "-e, --enctypt");
@@ -183,6 +191,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
       if (!mode_was_given){
         mode = CIPHER_MODE_DECTYPT;
         mode_was_given = true;
+        index += 1;
       }
       else {
         fprintf(stderr, "Already given an argument of %s\n", "-d, --dectypt");
@@ -201,7 +210,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
             index += 2;
           }
           else {
-            fprintf(stderr, "Could not parse %s as keys.\n", argv[index +1]);
+            fprintf(stderr, "Could not parse \"%s\" as keys.\n", argv[index +1]);
             return 1;
           }
         }
@@ -227,7 +236,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
             index += 2;
           }
           else {
-            fprintf(stderr, "Could not parse %s as key.\n", argv[index +1]);
+            fprintf(stderr, "Could not parse \"%s\" as key.\n", argv[index +1]);
             return 1;
           }
         }
@@ -257,7 +266,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
           }
         }
         else {
-          fprintf(stderr, "parse_uint() was failed: %s\n", argv[index +1]);
+          fprintf(stderr, "parse_uint() was failed: \"%s\"\n", argv[index +1]);
           return 1;
         }
       }
@@ -282,7 +291,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
           }
         }
         else {
-          fprintf(stderr, "parse_uint() was failed: %s\n", argv[index +1]);
+          fprintf(stderr, "parse_uint() was failed: \"%s\"\n", argv[index +1]);
           return 1;
         }
       }
@@ -348,7 +357,7 @@ static int read_all (FILE *file, void **datap, size_t *datasizep){
         }
         else {
           char *errorinfo = strerror(errno);
-          fprintf(stderr, "fread() was failed: %s\n", errorinfo);
+          fprintf(stderr, "fread() was failed: \"%s\"\n", errorinfo);
           free(data2);
           return 1;
         }
@@ -356,22 +365,30 @@ static int read_all (FILE *file, void **datap, size_t *datasizep){
     }
     else {
       char *errorinfo = strerror(errno);
-      fprintf(stderr, "realloc() to extend was failed: %s\n", errorinfo);
+      fprintf(stderr, "realloc() to extend was failed: \"%s\"\n", errorinfo);
       free(data);
       return 1;
     }
   }
-  data = realloc(data, datasize);
-  if (data != NULL){
-    *datap = data;
-    *datasizep = datasize;
-    return 0;
+  if (0 < datasize){
+    data = realloc(data, datasize);
+    if (data != NULL){
+      *datap = data;
+      *datasizep = datasize;
+      return 0;
+    }
+    else {
+      char *errorinfo = strerror(errno);
+      fprintf(stderr, "realloc() to shrink was failed: \"%s\"\n", errorinfo);
+      free(data);
+      return 1;
+    }
   }
   else {
-    char *errorinfo = strerror(errno);
-    fprintf(stderr, "realloc() to shrink was failed: %s\n", errorinfo);
+    *datap = NULL;
+    *datasizep = 0;
     free(data);
-    return 1;
+    return 0;
   }
 }
 
@@ -385,7 +402,7 @@ static int write_all (FILE *file, void *data, size_t datasize){
     else {
       if (ferror(file) != 0){
         char *errorinfo = strerror(errno);
-        fprintf(stderr, "fwrite() was failed: %s\n", errorinfo);
+        fprintf(stderr, "fwrite() was failed: \"%s\"\n", errorinfo);
         return 1;
       }
     }
@@ -407,7 +424,7 @@ int main (int argc, const char **argv){
         input = fopen(args.input_file, "r");
         if (input == NULL){
           char *errorinfo = strerror(errno);
-          fprintf(stderr, "fopen() to %s was failed: %s\n", args.input_file, errorinfo);
+          fprintf(stderr, "fopen() to \"%s\" was failed: \"%s\"\n", args.input_file, errorinfo);
           return 1;
         }
       }
@@ -419,7 +436,7 @@ int main (int argc, const char **argv){
         output = fopen(args.output_file, "w");
         if (output == NULL){
           char *errorinfo = strerror(errno);
-          fprintf(stderr, "fopen() to %s was failed: %s\n", args.output_file, errorinfo);
+          fprintf(stderr, "fopen() to \"%s\" was failed: \"%s\"\n", args.output_file, errorinfo);
           fclose(input);
           return 1;
         }
@@ -444,7 +461,7 @@ int main (int argc, const char **argv){
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
             char *errorinfo = strerror(errno);
-            fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
+            fprintf(stderr, "malloc() was failed: \"%s\"\n", errorinfo);
             fclose(input);
             fclose(output);
             return 1;
@@ -475,7 +492,7 @@ int main (int argc, const char **argv){
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
             char *errorinfo = strerror(errno);
-            fprintf(stderr, "malloc() was failed: %s\n", errorinfo);
+            fprintf(stderr, "malloc() was failed: \"%s\"\n", errorinfo);
             fclose(input);
             fclose(output);
             return 1;

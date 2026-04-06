@@ -24,8 +24,19 @@ clean:
 	rm -f src/complex-xcipher.o
 
 .PHONY: test
-test: debug
-	make -C test COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/dist/include COMPLEX_XCIPHER_LIB=$(CURDIR)/dist/lib
+test: 
+	make test-lib test-app
+
+.PHONY: test-lib
+test-lib: debug
+	make -C test/lib COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/dist/include COMPLEX_XCIPHER_LIB=$(CURDIR)/dist/lib
+
+.PHONY: test-app
+test-app: debug
+	pytest -v --executable $(CURDIR)/dist/bin/complex-xcipher.exe test/app
+
+.PHONY: setup
+	pip install -y pytest
 
 src/complex-xcipher.o: src/complex-xcipher.c src/complex-xcipher.h
 	$(GCC) $(CFLAGS) -c -o src/complex-xcipher.o src/complex-xcipher.c
