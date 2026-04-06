@@ -17,7 +17,7 @@ release:
 	make build CFLAGS="$(CFLAGS) $(CFLAGS_RELEASE)"
 
 .PHONY: build
-build: dist/include/complex-xcipher/complex-xcipher.h dist/lib/libcomplexxcipher.so dist/lib/libcomplexxcipher.a
+build: dist/include/complex-xcipher/complex-xcipher.h dist/lib/libcomplexxcipher.so dist/lib/libcomplexxcipher.a dist/bin/complex-xcipher.exe
 
 .PHONY: clean
 clean:
@@ -44,3 +44,9 @@ dist/lib/libcomplexxcipher.so: src/complex-xcipher.o | dist/lib
 
 dist/lib/libcomplexxcipher.a: src/complex-xcipher.o | dist/lib
 	ar r dist/lib/libcomplexxcipher.a src/complex-xcipher.o
+
+dist/bin:
+	mkdir -p dist/bin
+
+dist/bin/complex-xcipher.exe: src/main.c dist/lib/libcomplexxcipher.a | dist/bin
+	$(GCC) $(CFLAGS) -o dist/bin/complex-xcipher.exe src/main.c -Ldist/lib -lcomplexxcipher
