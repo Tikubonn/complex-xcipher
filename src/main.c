@@ -1,4 +1,6 @@
 
+#include <io.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stddef.h>
@@ -395,7 +397,7 @@ static int read_all (FILE *file, void **datap, size_t *datasizep){
 static int write_all (FILE *file, void *data, size_t datasize){
   size_t i = 0;
   while (i < datasize){
-    size_t wrotesize = fwrite(data, 1, datasize - i, file);
+    size_t wrotesize = fwrite(data + i, 1, datasize - i, file);
     if (0 < wrotesize){
       i += wrotesize;
     }
@@ -421,7 +423,7 @@ int main (int argc, const char **argv){
     else {
       FILE *input;
       if (args.input_file != NULL){
-        input = fopen(args.input_file, "r");
+        input = fopen(args.input_file, "rb");
         if (input == NULL){
           char *errorinfo = strerror(errno);
           fprintf(stderr, "fopen() to \"%s\" was failed: \"%s\"\n", args.input_file, errorinfo);
@@ -430,10 +432,15 @@ int main (int argc, const char **argv){
       }
       else {
         input = stdin;
+        if (_setmode(_fileno(stdin), _O_BINARY) == -1){
+          char *errorinfo = strerror(errno);
+          fprintf(stderr, "fopen() to %s was failed: \"%s\"\n", "fileno(stdin)", errorinfo);
+          return 1;
+        }
       }
       FILE *output;
       if (args.output_file != NULL){
-        output = fopen(args.output_file, "w");
+        output = fopen(args.output_file, "wb");
         if (output == NULL){
           char *errorinfo = strerror(errno);
           fprintf(stderr, "fopen() to \"%s\" was failed: \"%s\"\n", args.output_file, errorinfo);
@@ -443,6 +450,11 @@ int main (int argc, const char **argv){
       }
       else {
         output = stdout;
+        if (_setmode(_fileno(stdout), _O_BINARY) == -1){
+          char *errorinfo = strerror(errno);
+          fprintf(stderr, "fopen() to %s was failed: \"%s\"\n", "fileno(stdout)", errorinfo);
+          return 1;
+        }
       }
       void *data;
       size_t datasize;
@@ -486,8 +498,14 @@ int main (int argc, const char **argv){
             datasize2 = args.size;
           }
           else {
-            datasize2 = datasize;
-            fprintf(stderr, "Used the file size as decrypted data size, because never given an -s, --size argument.\n");
+            if (args.position <= datasize){
+              datasize2 = datasize - args.position;
+              fprintf(stderr, "Used the file size as decrypted data size, because never given an -s, --size argument.\n");
+            }
+            else {
+              fprintf(stderr, "Given a position %zu is out of range: %zu\n", args.position, datasize);
+              return 1;
+            }
           }
           void *data2 = malloc(datasize2);
           if (data2 == NULL){
@@ -517,8 +535,10 @@ int main (int argc, const char **argv){
           fclose(output);
           return 1;
       }
+      fclose(input);
+      fclose(output);
+      return 0;
     }
-    return 0;
   }
   else {
     return 1;

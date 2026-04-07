@@ -36,7 +36,7 @@ int main (){
   complex_xcipher_encrypt(_PLAIN_DATA, sizeof(_PLAIN_DATA), &keyset, encrypteddata, encrypteddatasize);
   printf("Enctypted data: ");
   for (size_t i = 0; i < encrypteddatasize; i++){
-    printf("%02x", encrypteddata[i]);
+    printf("%02x", encrypteddata[i] & 0xff);
   }
   printf("\n");
 
