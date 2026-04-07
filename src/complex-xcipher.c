@@ -35,9 +35,9 @@ void __stdcall complex_xcipher_keyset_setup (complex_xcipher_key keys[COMPLEX_XC
   keyset->bit_ref_mask_seed = keys[10];
 }
 
-void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key keysource, complex_xcipher_keyset *keyset){
+void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key keyseed, complex_xcipher_keyset *keyset){
   complex_xcipher_key keys[COMPLEX_XCIPHER_KEYS_LENGTH];
-  complex_xcipher_key k = keysource;
+  complex_xcipher_key k = keyseed;
   for (size_t i = 0; i < COMPLEX_XCIPHER_KEYS_LENGTH; i++){
     k = xorlshift64(k);
     keys[i] = k;

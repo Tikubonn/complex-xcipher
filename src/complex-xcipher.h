@@ -42,27 +42,28 @@ typedef struct complex_xcipher_keyset {
  * @brief complex_xcipher_keyset 構造体を初期化します。
  * @param keys 暗号鍵となる符号なし整数の配列です。
  * @param keyset 初期化する対象となる complex_xcipher_keyset 構造体です。
- * @note この関数は必ず成功します。
+ * @note 本関数は必ず成功します。
  */
 
 extern void __stdcall complex_xcipher_keyset_setup (complex_xcipher_key keys[COMPLEX_XCIPHER_KEYS_LENGTH], complex_xcipher_keyset *keyset);
 
 /**
  * @brief complex_xcipher_keyset 構造体を初期化します。本関数は complex_xcipher_keyset_setup 関数と異なり、1つの鍵から残りの鍵集合を作成します。
- * @param complex_xcipher_key keysource 鍵集合を作成するために用いられる complex_xcipher_key 整数です。
+ * @param keyseed 鍵集合を作成するために用いられる complex_xcipher_key 整数です。
  * @param keyset 初期化する対象となる complex_xcipher_keyset 構造体です。
- * @note この関数は必ず成功します。
+ * @note 本関数は必ず成功します。
+ * @warning 本関数は鍵の生成に疑似乱数を使用するため、手動で鍵を初期化するよりも安全性が落ちる可能性があります。
  */
 
-extern void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key keysource, complex_xcipher_keyset *keyset);
+extern void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key keyseed, complex_xcipher_keyset *keyset);
 
 /**
  * @brief 暗号化されたデータを保存する領域の最小限の大きさを計算します。
  * @param size 暗号化するデータの大きさです。
  * @param encrypteddatasizep 計算された領域の大きさを保存するための size_t 型のポインタです。
  * @return 成功ならば 0 失敗ならば 1 を返します。
- * @note size の値が 0 ならば、この関数は必ず成功し encrypteddatasizep には 0 が書き込まれます。
- * @warning 計算された領域の大きさが SIZE_MAX を超過してしまった場合、この関数は失敗します。
+ * @note size の値が 0 ならば、本関数は必ず成功し encrypteddatasizep には 0 が書き込まれます。
+ * @warning 計算された領域の大きさが SIZE_MAX を超過してしまった場合、本関数は失敗します。
  */
 
 extern int __stdcall complex_xcipher_calc_encrypted_data_size (size_t size, size_t *encrypteddatasizep);
@@ -75,7 +76,7 @@ extern int __stdcall complex_xcipher_calc_encrypted_data_size (size_t size, size
  * @param encrypteddata 暗号化されたデータが書き込まれるメモリ領域の先頭アドレスです。
  * @param encrypteddatasize complex_xcipher_calc_encrypted_data_size() 関数で計算された、暗号化されたデータが書き込まれるメモリ領域の大きさです。
  * @return 成功ならば 0 失敗ならば 1 を返します。
- * @warning datasize の値が encrypteddatasize よりも大きい場合、この関数は失敗します。
+ * @warning datasize の値が encrypteddatasize よりも大きい場合、本関数は失敗します。
  * @warning data, encrypteddata が指す領域がそれぞれ重なっていた場合の動作は未定義です。
  */
 
@@ -90,9 +91,9 @@ extern int __stdcall complex_xcipher_encrypt (const void *data, size_t datasize,
  * @param encrypteddata 暗号化されたデータが書き込まれるメモリ領域の先頭アドレスです。
  * @param encrypteddatasize complex_xcipher_calc_encrypted_data_size() 関数で計算された、暗号化されたデータが書き込まれるメモリ領域の大きさです。
  * @return 成功ならば 0 失敗ならば 1 を返します。
- * @warning position, datasize の合計値が encrypteddatasize よりも大きい場合、この関数は失敗します。
+ * @warning position, datasize の合計値が encrypteddatasize よりも大きい場合、本関数は失敗します。
  * @warning data, encrypteddata が指す領域がそれぞれ重なっていた場合の動作は未定義です。
- * @note この関数は既に暗号化されたデータを部分的に書き換えたい場合に使用することができます。
+ * @note 本関数は既に暗号化されたデータを部分的に書き換えたい場合に使用することができます。
  */
 
 extern int __stdcall complex_xcipher_encrypt_into (size_t position, const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *encrypteddata, size_t encrypteddatasize);
@@ -106,9 +107,9 @@ extern int __stdcall complex_xcipher_encrypt_into (size_t position, const void *
  * @param keyset complex_xcipher_keyset_setup() 関数で初期化された complex_xcipher_keyset 構造体へのポインタです。
  * @param decrypteddata 復号されたデータが書き込まれるメモリ領域の大きさ先頭アドレスです。
  * @return 成功ならば 0 失敗ならば 1 を返します。
- * @warning position, size の合計値が datasize よりも大きい場合、この関数は失敗します。
+ * @warning position, size の合計値が datasize よりも大きい場合、本関数は失敗します。
  * @warning data, decrypteddata が指す領域がそれぞれ重なっていた場合の動作は未定義です。
- * @note この関数は暗号化されたデータから部分的に読み込みたい場合にも使用することができます。
+ * @note 本関数は暗号化されたデータから部分的に読み込みたい場合にも使用することができます。
  */
 
 extern int __stdcall complex_xcipher_decrypt (size_t position, size_t size, const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *decrypteddata);
