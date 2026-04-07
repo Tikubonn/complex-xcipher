@@ -3,6 +3,9 @@
 
 ## Overview
 
+![](https://img.shields.io/badge/language-C-blue)
+![](https://img.shields.io/badge/license-MIT-green)
+
 1バイトのデータを複数バイトに分散させる暗号機能を提供します。
 
 本ライブラリが提供する暗号機能は次の特徴を持ちます。
@@ -53,7 +56,7 @@ int main (){
 ## Build & Test
 
 ```shell
-make setup #install necessary python packages.
+make setup
 make release test
 ```
 

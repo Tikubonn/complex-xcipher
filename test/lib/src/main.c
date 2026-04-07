@@ -3,11 +3,13 @@
 #include "test-complex-xcipher-encrypt.h"
 #include "test-complex-xcipher-encrypt-into.h"
 #include "test-complex-xcipher-decrypt.h"
+#include "test-complex-xcipher-clear.h"
 
 int main (){
   test_complex_xcipher_calc_encrypted_data_size();
   test_complex_xcipher_encrypt();
   test_complex_xcipher_encrypt_into();
   test_complex_xcipher_decrypt();
+  test_complex_xcipher_clear();
   return 0;
 }

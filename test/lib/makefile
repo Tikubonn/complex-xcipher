@@ -21,8 +21,11 @@ src/test-complex-xcipher-encrypt-into.o: src/test-complex-xcipher-encrypt-into.c
 src/test-complex-xcipher-encrypt.o: src/test-complex-xcipher-encrypt.c src/test-complex-xcipher-encrypt.h src/test.h $(COMPLEX_XCIPHER_INCLUDE)
 	$(GCC) $(CFLAGS) -c -o src/test-complex-xcipher-encrypt.o src/test-complex-xcipher-encrypt.c
 
+src/test-complex-xcipher-clear.o: src/test-complex-xcipher-clear.c src/test-complex-xcipher-clear.h src/test.h $(COMPLEX_XCIPHER_INCLUDE)
+	$(GCC) $(CFLAGS) -c -o src/test-complex-xcipher-clear.o src/test-complex-xcipher-clear.c
+
 bin:
 	mkdir -p bin
 
-bin/test: src/main.o src/test-complex-xcipher-calc-encrypted-data-size.o src/test-complex-xcipher-decrypt.o src/test-complex-xcipher-encrypt-into.o src/test-complex-xcipher-encrypt.o $(COMPLEX_XCIPHER_INCLUDE) $(COMPLEX_XCIPHER_LIB) | bin
-	$(GCC) $(CFLAGS) -o bin/test src/main.o src/test-complex-xcipher-calc-encrypted-data-size.o src/test-complex-xcipher-decrypt.o src/test-complex-xcipher-encrypt-into.o src/test-complex-xcipher-encrypt.o -lcomplexxcipher
+bin/test: src/main.o src/test-complex-xcipher-calc-encrypted-data-size.o src/test-complex-xcipher-decrypt.o src/test-complex-xcipher-encrypt-into.o src/test-complex-xcipher-encrypt.o src/test-complex-xcipher-clear.o $(COMPLEX_XCIPHER_INCLUDE) $(COMPLEX_XCIPHER_LIB) | bin
+	$(GCC) $(CFLAGS) -o bin/test src/main.o src/test-complex-xcipher-calc-encrypted-data-size.o src/test-complex-xcipher-decrypt.o src/test-complex-xcipher-encrypt-into.o src/test-complex-xcipher-encrypt.o src/test-complex-xcipher-clear.o -lcomplexxcipher

@@ -112,3 +112,25 @@ extern int __stdcall complex_xcipher_encrypt_into (size_t position, const void *
  */
 
 extern int __stdcall complex_xcipher_decrypt (size_t position, size_t size, const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *decrypteddata);
+
+/**
+ * @brief 指定された領域をランダムな値で上書きします。
+ * @param data 上書きするデータの先頭アドレスです。
+ * @param datasize 上書きするデータの大きさです。
+ * @note 本マクロが提供する機能や用途は complex_xcipher_clear 関数と同じです。
+ * @note 本マクロは complex_xcipher_clear 関数のシード値に __LINE__ を指定する別名として機能します。
+ */
+
+#define COMPLEX_XCIPHER_CLEAR(data, datasize)\
+complex_xcipher_clear(data, datasize, __LINE__)
+
+/**
+ * @brief 指定した領域をランダムな値で上書きします。
+ * @param data 上書きするデータの先頭アドレスです。
+ * @param datasize 上書きするデータの大きさです。
+ * @param seed ランダムな値を生成するために用いられるシード値です。
+ * @note 本関数の機能はスタック領域に残された復号済みデータを安全に消去する目的で使用することができます。
+ * @note 本関数を直接使用するよりも、本関数の別名である COMPLEX_XCIPHER_CLEAR マクロの使用を推奨します。
+ */
+
+extern void __stdcall complex_xcipher_clear (void *data, size_t datasize, uint64_t seed);

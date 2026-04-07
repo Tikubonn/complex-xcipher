@@ -144,3 +144,11 @@ int __stdcall complex_xcipher_decrypt (size_t position, size_t size, const void 
     return 1;
   }
 }
+
+void __stdcall complex_xcipher_clear (void *data, size_t datasize, uint64_t seed){
+  uint64_t rand = seed;
+  for (size_t i = 0; i < datasize; i++){
+    rand = xorlshift64(rand);
+    ((uint8_t*)data)[i] = rand;
+  }
+}
