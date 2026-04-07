@@ -53,6 +53,7 @@ int main (){
 ## Build & Test
 
 ```shell
+make setup #install necessary python packages.
 make release test
 ```
 

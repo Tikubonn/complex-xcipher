@@ -131,6 +131,7 @@ typedef struct arguments {
 } arguments;
 
 const char HELP_MESSAGE[] = "Usage: complex-xcipher [options] [file]\n"
+"Provide encryption, decryption function with command line.\n"
 "\n"
 "Arguments:\n"
 "  input-file  file to input as binary.\n"

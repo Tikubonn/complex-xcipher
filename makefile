@@ -36,7 +36,8 @@ test-app: debug
 	pytest -v --executable $(CURDIR)/dist/bin/complex-xcipher.exe test/app
 
 .PHONY: setup
-	pip install -y pytest
+setup:
+	pip install pytest
 
 src/complex-xcipher.o: src/complex-xcipher.c src/complex-xcipher.h
 	$(GCC) $(CFLAGS) -c -o src/complex-xcipher.o src/complex-xcipher.c
