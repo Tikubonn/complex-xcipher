@@ -66,11 +66,39 @@ make release test
 doxygen
 ```
 
+## Commands 
+
+### complex-xcipher
+
+コマンドライン経由で暗号機能を提供します。
+
+```shell
+dist/bin/complex-xcipher.exe -h
+```
+
+```
+Usage: complex-xcipher [options] [file]
+Provide encryption, decryption function with command line.
+
+Arguments:
+  input-file  file to input as binary.
+
+Options:
+  -o, --output-file               file to save the result.
+  -d, --dectypt                   Switch mode to dectyption.
+  -e, --enctypt                   Switch mode to enctyption.
+  -k, --key 0x123...              set cipher keys from long hexadecimal digits.
+  -K, --auto-key 123...|0x123...  gen cipher keys from an unsigned integer to set.
+  -p, --position 123...|0x123...  its enabled on decrypt mode, its start position of decrypted data.
+  -s, --size 123...|0x123...      its enabled on decrypt mode, its size of decrypted data.
+  -h, --help                      dump help information then exit.
+```
+
 ## Donation
 
 <a href="https://buymeacoffee.com/tikubonn" target="_blank"><img src="doc/img/qr-code.png" width="3000px" height="3000px" style="width:150px;height:auto;"></a>
 
-もし本パッケージがお役立ちになりましたら、少額の寄付で支援することができます。<br>
+もし本ライブラリがお役立ちになりましたら、少額の寄付で支援することができます。<br>
 寄付していただいたお金は書籍の購入費用や日々の支払いに使わせていただきます。
 ただし、これは寄付の多寡によって継続的な開発やサポートを保証するものではありません。ご留意ください。
 
