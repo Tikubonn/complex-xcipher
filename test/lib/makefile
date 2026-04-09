@@ -1,10 +1,20 @@
 
-export GCC=gcc
+# export GCC=gcc
 export GDB=gdb
 export CFLAGS+=-I$(COMPLEX_XCIPHER_INCLUDE) -L$(COMPLEX_XCIPHER_LIB)
 
-all: bin/test
+.PHONY: test
+test: bin/test
 	$(GDB) bin/test
+
+.PHONY: clean
+clean:
+	rm -f src/main.o
+	rm -f src/test-complex-xcipher-calc-encrypted-data-size.o
+	rm -f src/test-complex-xcipher-decrypt.o
+	rm -f src/test-complex-xcipher-encrypt-into.o
+	rm -f src/test-complex-xcipher-encrypt.o
+	rm -f src/test-complex-xcipher-clear.o
 
 src/main.o: src/main.c src/test.h
 	$(GCC) $(CFLAGS) -c -o src/main.o src/main.c

@@ -37,12 +37,12 @@ static int parse_uint_as_hex (const char *source, uintmax_t *valuep){
       else 
       if ('a' <= source[i] && source[i] <= 'f'){
         value *= 16;
-        value += source[i] - 'a';
+        value += 10 + source[i] - 'a';
       }
       else 
       if ('A' <= source[i] && source[i] <= 'F'){
         value *= 16;
-        value += source[i] - 'A';
+        value += 10 + source[i] - 'A';
       }
       else {
         fprintf(stderr, "Invalid char %c detected from \"%s\" when parse as uint(hexadecimal).\n", source[i], source);

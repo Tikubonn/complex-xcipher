@@ -1,6 +1,7 @@
 
 export GCC=gcc
-export CFLAGS=-Wall
+# export GCC=i686-w64-mingw32-gcc #for 32bits
+export CFLAGS=-Wall -fPIC
 export CFLAGS_DEBUG=-g -Og
 export CFLAGS_RELEASE=-O3 -finline-functions
 
@@ -22,6 +23,7 @@ build: dist/include/complex-xcipher/complex-xcipher.h dist/lib/libcomplexxcipher
 .PHONY: clean
 clean:
 	rm -f src/complex-xcipher.o
+	make -C test/lib clean
 
 .PHONY: test
 test: 
@@ -29,7 +31,7 @@ test:
 
 .PHONY: test-lib
 test-lib: debug
-	make -C test/lib COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/dist/include COMPLEX_XCIPHER_LIB=$(CURDIR)/dist/lib
+	make -C test/lib COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/dist/include COMPLEX_XCIPHER_LIB=$(CURDIR)/dist/lib test
 
 .PHONY: test-app
 test-app: debug
@@ -37,7 +39,7 @@ test-app: debug
 
 .PHONY: setup
 setup:
-	pip install pytest
+	pip install pytest pylint
 
 src/complex-xcipher.o: src/complex-xcipher.c src/complex-xcipher.h
 	$(GCC) $(CFLAGS) -c -o src/complex-xcipher.o src/complex-xcipher.c
