@@ -127,6 +127,7 @@ typedef struct arguments {
   size_t size;
   const char *input_file;
   const char *output_file;
+  bool add_nul;
   bool help;
 } arguments;
 
@@ -137,17 +138,17 @@ const char HELP_MESSAGE[] = "Usage: complex-xcipher [options] [file]\n"
 "  input-file  file to input as binary.\n"
 "\n"
 "Options:\n"
-"  -o, --output-file               file to save the result.\n"
+"  -o, --output-file               File to save the result.\n"
 "  -d, --dectypt                   Switch mode to dectyption.\n"
 "  -e, --enctypt                   Switch mode to enctyption.\n"
-"  -k, --key 0x123...              set cipher keys from long hexadecimal digits.\n"
-"  -K, --auto-key 123...|0x123...  gen cipher keys from an unsigned integer to set.\n"
-"  -p, --position 123...|0x123...  its enabled on decrypt mode, its start position of decrypted data.\n"
-"  -s, --size 123...|0x123...      its enabled on decrypt mode, its size of decrypted data.\n"
+"  -k, --key 0x123...              Set cipher keys from long hexadecimal digits.\n"
+"  -K, --auto-key 123...|0x123...  Gen cipher keys from an unsigned integer to set.\n"
+"  -p, --position 123...|0x123...  Its enabled on decrypt mode, its start position of decrypted data.\n"
+"  -s, --size 123...|0x123...      Its enabled on decrypt mode, its size of decrypted data.\n"
+"  -N, --nul                       If its enabled, add a nul character at end.\n"
 "  -h, --help                      dump help information then exit.";
 
 static int parse_args (int argc, const char **argv, arguments *args){
-  bool help = false;
   bool mode_was_given = false;
   bool keyset_was_setup = false;
   cipher_mode mode = CIPHER_MODE_DECTYPT;
@@ -156,6 +157,8 @@ static int parse_args (int argc, const char **argv, arguments *args){
   size_t size = 0;
   const char *input_file = NULL;
   const char *output_file = NULL;
+  bool add_nul = false;
+  bool help = false;
   size_t index = 1;
   while (index < argc){
     if (strcmp(argv[index], "-o") == 0 ||
@@ -304,6 +307,18 @@ static int parse_args (int argc, const char **argv, arguments *args){
       }
     }
     else 
+    if (strcmp(argv[index], "-N") == 0 ||
+        strcmp(argv[index], "--nul") == 0){
+      if (!add_nul){
+        add_nul = true;
+        index += 1;
+      }
+      else {
+        fprintf(stderr, "Already given an argument of %s\n", "-N, --nul");
+        return 1;
+      }
+    }
+    else 
     if (strcmp(argv[index], "-h") == 0 ||
         strcmp(argv[index], "--help") == 0){
       if (!help){
@@ -326,8 +341,12 @@ static int parse_args (int argc, const char **argv, arguments *args){
       }
     }
   }
-  if (!help && !keyset_was_setup){
+  if (!help && !keyset_was_setup){ //tmp.
     fprintf(stderr, "Never given a cipher key.\n");
+    return 1;
+  }
+  if (add_nul && mode != CIPHER_MODE_ENCTYPT){ //tmp.
+    fprintf(stderr, "%s options has supported by only encrypt-mode.\n", "-N, --nul");
     return 1;
   }
   args->mode = mode;
@@ -335,6 +354,7 @@ static int parse_args (int argc, const char **argv, arguments *args){
   args->size = size;
   args->input_file = input_file;
   args->output_file = output_file;
+  args->add_nul = add_nul;
   args->help = help;
   memcpy(&(args->keyset), &keyset, sizeof(keyset));
   return 0;
@@ -465,6 +485,11 @@ int main (int argc, const char **argv){
       }
       switch (args.mode){
         case CIPHER_MODE_ENCTYPT: {
+          if (args.add_nul){
+            data = realloc(data, datasize +1);
+            ((uint8_t*)data)[datasize] = 0;
+            datasize += 1;
+          }
           size_t datasize2;
           if (complex_xcipher_calc_encrypted_data_size(datasize, &datasize2) != 0){
             fclose(input);
