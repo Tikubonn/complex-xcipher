@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <complex-xcipher/complex-xcipher.h>
-#include "test.h"
+#include <test.h>
 
 #define SAMPLE_TEXT "This is a secret data."
 

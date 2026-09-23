@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "complex-xcipher.h"
+#include <complex-xcipher/complex-xcipher.h>
 
 static int parse_uint_as_decimal (const char *source, uintmax_t *valuep){
   uintmax_t value = 0;

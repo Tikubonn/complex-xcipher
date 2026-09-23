@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #define _TEST_LOG_FMT(status, status_color, form, fmt, ...)\
-printf("\e[" #status_color "m[" status "]\e[m %s:%d %s " fmt "\n", __FILE__, __LINE__, #form __VA_OPT__(,) __VA_ARGS__)
+printf("\e[" #status_color "m[" status "]\e[m %s:%d %s: " fmt "\n", __FILE__, __LINE__, #form __VA_OPT__(,) __VA_ARGS__)
 
 #define _TEST_LOG(status, status_color, form)\
 printf("\e[" #status_color "m[" status "]\e[m %s:%d %s\n", __FILE__, __LINE__, #form)
@@ -17,3 +17,6 @@ else {\
 _TEST_LOG ## __VA_OPT__(_FMT)("fail", 31, form __VA_OPT__(,) __VA_ARGS__);\
 abort();\
 }
+
+#define INFO(fmt, ...)\
+printf("\e[34m[info]\e[m %s:%d: " fmt "\n", __FILE__, __LINE__, __VA_ARGS__);

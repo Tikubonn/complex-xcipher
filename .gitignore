@@ -1,8 +1,1 @@
-dist
-docs
-*.a
-*.o
-*.so
-*.exe
-example.c
 NOTE.txt

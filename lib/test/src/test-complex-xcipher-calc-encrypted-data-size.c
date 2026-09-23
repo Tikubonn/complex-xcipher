@@ -2,7 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <complex-xcipher/complex-xcipher.h>
-#include "test.h"
+#include <test.h>
 
 static void testcase (){
   {

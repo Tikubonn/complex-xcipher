@@ -1,0 +1,6 @@
+/dst/
+*.a
+*.o
+*.dll
+*.lib
+*.exe

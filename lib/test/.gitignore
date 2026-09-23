@@ -1,0 +1,6 @@
+/bin/
+*.a
+*.o
+*.dll
+*.lib
+*.exe

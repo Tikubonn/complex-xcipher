@@ -15,12 +15,14 @@
 typedef uint64_t complex_xcipher_key;
 
 /**
+ * @def
  * complex_xcipher_key 型の最大値です。
  */
 
 #define COMPLEX_XCIPHER_KEY_MAX UINT64_MAX
 
 /**
+ * @def
  * @brief complex_xcipher_keyset_setup() 関数に指定する complex_xcipher_key 型配列の長さです。
  */
 
@@ -39,6 +41,7 @@ typedef struct complex_xcipher_keyset {
 } complex_xcipher_keyset;
 
 /**
+ * @fn
  * @brief complex_xcipher_keyset 構造体を初期化します。
  * @param keys 暗号鍵となる符号なし整数の配列です。
  * @param keyset 初期化する対象となる complex_xcipher_keyset 構造体です。
@@ -48,6 +51,7 @@ typedef struct complex_xcipher_keyset {
 extern void __stdcall complex_xcipher_keyset_setup (complex_xcipher_key keys[COMPLEX_XCIPHER_KEYS_LENGTH], complex_xcipher_keyset *keyset);
 
 /**
+ * @fn
  * @brief complex_xcipher_keyset 構造体を初期化します。本関数は complex_xcipher_keyset_setup 関数と異なり、1つの鍵から残りの鍵集合を作成します。
  * @param keyseed 鍵集合を作成するために用いられる complex_xcipher_key 整数です。
  * @param keyset 初期化する対象となる complex_xcipher_keyset 構造体です。
@@ -58,6 +62,7 @@ extern void __stdcall complex_xcipher_keyset_setup (complex_xcipher_key keys[COM
 extern void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key keyseed, complex_xcipher_keyset *keyset);
 
 /**
+ * @fn
  * @brief 暗号化されたデータを保存する領域の最小限の大きさを計算します。
  * @param size 暗号化するデータの大きさです。
  * @param encrypteddatasizep 計算された領域の大きさを保存するための size_t 型のポインタです。
@@ -69,6 +74,7 @@ extern void __stdcall complex_xcipher_keyset_auto_setup (complex_xcipher_key key
 extern int __stdcall complex_xcipher_calc_encrypted_data_size (size_t size, size_t *encrypteddatasizep);
 
 /**
+ * @fn
  * @brief データを暗号化します。暗号化されたデータは指定されたメモリ領域に書き込まれます。
  * @param data 暗号化するデータの先頭アドレスです。
  * @param datasize 暗号化するデータの大きさです。
@@ -83,6 +89,7 @@ extern int __stdcall complex_xcipher_calc_encrypted_data_size (size_t size, size
 extern int __stdcall complex_xcipher_encrypt (const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *encrypteddata, size_t encrypteddatasize);
 
 /**
+ * @fn
  * @brief データを暗号化します。暗号化されたデータは指定されたメモリ領域の、指定された位置に書き込まれます。
  * @param position データが書き込まれる位置です。これは平文を基準にした整数を指定します。
  * @param data 暗号化するデータの先頭アドレスです。
@@ -99,6 +106,7 @@ extern int __stdcall complex_xcipher_encrypt (const void *data, size_t datasize,
 extern int __stdcall complex_xcipher_encrypt_into (size_t position, const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *encrypteddata, size_t encrypteddatasize);
 
 /**
+ * @fn
  * @brief データを復号します。復号されたデータは指定されたメモリ領域に書き込まれます。
  * @param position 復号するデータの位置です。これは平文を基準にした整数を指定します。
  * @param size 復号するデータの大きさです。
@@ -115,6 +123,7 @@ extern int __stdcall complex_xcipher_encrypt_into (size_t position, const void *
 extern int __stdcall complex_xcipher_decrypt (size_t position, size_t size, const void *data, size_t datasize, const complex_xcipher_keyset *keyset, void *decrypteddata);
 
 /**
+ * @fn
  * @brief 指定された領域をランダムな値で上書きします。
  * @param data 上書きするデータの先頭アドレスです。
  * @param datasize 上書きするデータの大きさです。
@@ -126,6 +135,7 @@ extern int __stdcall complex_xcipher_decrypt (size_t position, size_t size, cons
 complex_xcipher_clear(data, datasize, __LINE__)
 
 /**
+ * @fn
  * @brief 指定した領域をランダムな値で上書きします。
  * @param data 上書きするデータの先頭アドレスです。
  * @param datasize 上書きするデータの大きさです。
