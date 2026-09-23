@@ -8,18 +8,21 @@ clean:
 	make -C app clean
 
 .PHONY: test
-test:
+test: build
 	make -C lib test
 	make -C app test COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/lib/dst/include COMPLEX_XCIPHER_LIB=$(CURDIR)/lib/dst/lib
 
-dst/include:
+dst:
+	mkdir -p dst
+
+dst/include: | dst
 	make -C lib build
 	cp -r lib/dst/include dst/include
 
-dst/lib:
+dst/lib: | dst
 	make -C lib build
 	cp -r lib/dst/lib dst/lib
 
-dst/bin:
+dst/bin: | dst
 	make -C app build COMPLEX_XCIPHER_INCLUDE=$(CURDIR)/lib/dst/include COMPLEX_XCIPHER_LIB=$(CURDIR)/lib/dst/lib
 	cp -r app/bin dst/bin
